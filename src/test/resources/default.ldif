@@ -1,0 +1,32 @@
+version: 1
+
+dn: dc=example,dc=com
+objectClass: domain
+objectClass: top
+dc: example
+
+dn: uid=Carl Friedrich Gauss,dc=example,dc=com
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+objectclass: mockGroupOfNamesOverlay
+uid: gauss
+userPassword: password
+cn: Carl Friedrich Gauss
+cn:: Q2FybCBGcmllZHJpY2ggR2F1c3M=
+sn: Gauss
+mail: gauss@ldap.example.com
+memberOf: cn=svc-test,dc=example,dc=com
+
+dn: cn=svc-test,dc=example,dc=com
+objectClass: top
+objectClass: posixGroup
+cn: svc-test
+memberUid: gauss
+
+dn: cn=svc-test2,dc=example,dc=com
+objectClass: top
+objectClass: groupOfNames
+cn: svc-test2
+member: cn=gauss,dc=example,dc=com
