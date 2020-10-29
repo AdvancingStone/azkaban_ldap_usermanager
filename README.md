@@ -50,3 +50,5 @@ user.manager.ldap.createProjectsGroups=createProjects
 user.manager.ldap.groupSearchBase=ou=Group,dc=example,dc=com
 user.manager.ldap.embeddedGroups=false
 ```
+
+![ldap](.\pic\ldap.png)
