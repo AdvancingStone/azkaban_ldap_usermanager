@@ -17,8 +17,7 @@ import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class LdapUserManager implements UserManager {
     final static Logger logger = Logger.getLogger(UserManager.class);
@@ -138,35 +137,49 @@ public class LdapUserManager implements UserManager {
             if (isMemberOfGroups(connection, entry, ldapAdminGroups)) {
                 logger.info("Granting admin access to user: " + username);
                 user.addRole("admin");
+                if(!ldapAdminGroups.isEmpty()){
+                    addGroups(user, ldapAdminGroups);
+                }
             }
 
             if (isMemberOfGroups(connection, entry, ldapReadGroups)) {
                 logger.info("Granting read access to user: " + username);
                 user.addRole("read");
+                if(!ldapReadGroups.isEmpty()){
+                    addGroups(user, ldapReadGroups);
+                }
             }
 
             if (isMemberOfGroups(connection, entry, ldapWriteGroups)) {
                 logger.info("Granting write access to user: " + username);
-                user.addRole("read");
                 user.addRole("write");
+                if(!ldapWriteGroups.isEmpty()){
+                    addGroups(user, ldapWriteGroups);
+                }
             }
 
             if (isMemberOfGroups(connection, entry, ldapExecuteGroups)) {
                 logger.info("Granting execute access to user: " + username);
-                user.addRole("read");
                 user.addRole("execute");
+                if(!ldapExecuteGroups.isEmpty()){
+                    addGroups(user, ldapExecuteGroups);
+                }
             }
 
             if (isMemberOfGroups(connection, entry, ldapScheduleGroups)) {
                 logger.info("Granting schedule access to user: " + username);
-                user.addRole("read");
                 user.addRole("schedule");
+                if(!ldapScheduleGroups.isEmpty()){
+                    addGroups(user, ldapScheduleGroups);
+                }
             }
 
             if (isMemberOfGroups(connection, entry, ldapCreateProjectsGroups)) {
                 logger.info("Granting createProjects access to user: " + username);
-                user.addRole("read");
                 user.addRole("createProjects");
+                if(!ldapCreateProjectsGroups.isEmpty()){
+                    addGroups(user, ldapCreateProjectsGroups);
+                }
             }
 
             return user;
@@ -305,7 +318,6 @@ public class LdapUserManager implements UserManager {
 
         try {
             connection = getLdapConnection();
-
             result = connection.search(
                     ldapUserBase,
                     "(" + escapeLDAPSearchFilter(ldapUserIdProperty + "=" + username) + ")",
@@ -316,9 +328,7 @@ public class LdapUserManager implements UserManager {
                 return false;
             }
 
-
             final Entry entry = result.get();
-
             if (!isMemberOfGroups(connection, entry, ldapAllowedGroups)) {
                 return false;
             }
@@ -333,7 +343,6 @@ public class LdapUserManager implements UserManager {
         } finally {
             if (result != null)
                 result.close();
-
             if (connection != null) {
                 try {
                     connection.close();
@@ -367,7 +376,17 @@ public class LdapUserManager implements UserManager {
         return connection;
     }
 
+    private void addGroups(User user, List<String> groups){
+        Iterator<String> iters = groups.iterator();
+        while (iters.hasNext()){
+            String item = iters.next();
+            user.addGroup(item);
+        }
+    }
+
+
     static String escapeLDAPSearchFilter(String filter) {
         return FilterEncoder.encodeFilterValue(filter);
     }
+
 }
