@@ -1,4 +1,4 @@
-package com.hypers.azkaban;
+package com.bluehonour.azkaban;
 
 import azkaban.user.*;
 import azkaban.utils.Props;
@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.util.*;
 
-public class LdapUserManager implements UserManager {
+public class OpenLdapUserManager implements UserManager {
     final static Logger logger = Logger.getLogger(UserManager.class);
 
     public static final String LDAP_HOST = "user.manager.ldap.host";
@@ -58,7 +58,7 @@ public class LdapUserManager implements UserManager {
     private String ldapGroupSearchBase;
     private boolean ldapEmbeddedGroups;
 
-    public LdapUserManager(Props props) {
+    public OpenLdapUserManager(Props props) {
         ldapHost = props.getString(LDAP_HOST);
         ldapPort = props.getInt(LDAP_PORT);
         useSsl = props.getBoolean(LDAP_USE_SSL);
@@ -385,7 +385,7 @@ public class LdapUserManager implements UserManager {
     }
 
 
-    static String escapeLDAPSearchFilter(String filter) {
+    public static String escapeLDAPSearchFilter(String filter) {
         return FilterEncoder.encodeFilterValue(filter);
     }
 

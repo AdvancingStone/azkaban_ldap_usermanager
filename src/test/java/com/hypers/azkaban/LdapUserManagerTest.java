@@ -4,6 +4,7 @@ import azkaban.user.Role;
 import azkaban.user.User;
 import azkaban.user.UserManagerException;
 import azkaban.utils.Props;
+import com.bluehonour.azkaban.OpenLdapUserManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,26 +30,26 @@ public class LdapUserManagerTest {
             .usingBindCredentials("password")
             .build();
 
-    private LdapUserManager userManager;
+    private OpenLdapUserManager userManager;
 
     @Before
     public void setUp() throws Exception {
         Props props = getProps();
-        userManager = new LdapUserManager(props);
+        userManager = new OpenLdapUserManager(props);
     }
 
     private Props getProps() {
         Props props = new Props();
-        props.put(LdapUserManager.LDAP_HOST, "localhost");
-        props.put(LdapUserManager.LDAP_PORT, "11389");
-        props.put(LdapUserManager.LDAP_USE_SSL, "false");
-        props.put(LdapUserManager.LDAP_USER_BASE, "dc=example,dc=com");
-        props.put(LdapUserManager.LDAP_USERID_PROPERTY, "uid");
-        props.put(LdapUserManager.LDAP_EMAIL_PROPERTY, "mail");
-        props.put(LdapUserManager.LDAP_BIND_ACCOUNT, "cn=read-only-admin,dc=example,dc=com");
-        props.put(LdapUserManager.LDAP_BIND_PASSWORD, "password");
-        props.put(LdapUserManager.LDAP_ALLOWED_GROUPS, "");
-        props.put(LdapUserManager.LDAP_GROUP_SEARCH_BASE, "dc=example,dc=com");
+        props.put(OpenLdapUserManager.LDAP_HOST, "localhost");
+        props.put(OpenLdapUserManager.LDAP_PORT, "11389");
+        props.put(OpenLdapUserManager.LDAP_USE_SSL, "false");
+        props.put(OpenLdapUserManager.LDAP_USER_BASE, "dc=example,dc=com");
+        props.put(OpenLdapUserManager.LDAP_USERID_PROPERTY, "uid");
+        props.put(OpenLdapUserManager.LDAP_EMAIL_PROPERTY, "mail");
+        props.put(OpenLdapUserManager.LDAP_BIND_ACCOUNT, "cn=read-only-admin,dc=example,dc=com");
+        props.put(OpenLdapUserManager.LDAP_BIND_PASSWORD, "password");
+        props.put(OpenLdapUserManager.LDAP_ALLOWED_GROUPS, "");
+        props.put(OpenLdapUserManager.LDAP_GROUP_SEARCH_BASE, "dc=example,dc=com");
         return props;
     }
 
@@ -63,8 +64,8 @@ public class LdapUserManagerTest {
     @Test
     public void testGetUserWithAllowedGroup() throws Exception {
         Props props = getProps();
-        props.put(LdapUserManager.LDAP_ALLOWED_GROUPS, "svc-test");
-        final LdapUserManager manager = new LdapUserManager(props);
+        props.put(OpenLdapUserManager.LDAP_ALLOWED_GROUPS, "svc-test");
+        final OpenLdapUserManager manager = new OpenLdapUserManager(props);
 
         User user = manager.getUser("gauss", "password");
 
@@ -75,8 +76,8 @@ public class LdapUserManagerTest {
     @Test
     public void testGetUserWithAllowedGroupThatGroupOfNames() throws Exception {
         Props props = getProps();
-        props.put(LdapUserManager.LDAP_ALLOWED_GROUPS, "svc-test2");
-        final LdapUserManager manager = new LdapUserManager(props);
+        props.put(OpenLdapUserManager.LDAP_ALLOWED_GROUPS, "svc-test2");
+        final OpenLdapUserManager manager = new OpenLdapUserManager(props);
 
         User user = manager.getUser("gauss", "password");
 
@@ -88,9 +89,9 @@ public class LdapUserManagerTest {
     @Test
     public void testGetUserWithEmbeddedGroup() throws Exception {
         Props props = getProps();
-        props.put(LdapUserManager.LDAP_ALLOWED_GROUPS, "svc-test");
-        props.put(LdapUserManager.LDAP_EMBEDDED_GROUPS, "true");
-        final LdapUserManager manager = new LdapUserManager(props);
+        props.put(OpenLdapUserManager.LDAP_ALLOWED_GROUPS, "svc-test");
+        props.put(OpenLdapUserManager.LDAP_EMBEDDED_GROUPS, "true");
+        final OpenLdapUserManager manager = new OpenLdapUserManager(props);
 
         User user = manager.getUser("gauss", "password");
 
@@ -138,8 +139,8 @@ public class LdapUserManagerTest {
     @Test
     public void testInvalidEmailPropertyDoesNotThrowNullPointerException() throws Exception {
         Props props = getProps();
-        props.put(LdapUserManager.LDAP_EMAIL_PROPERTY, "invalidField");
-        userManager = new LdapUserManager(props);
+        props.put(OpenLdapUserManager.LDAP_EMAIL_PROPERTY, "invalidField");
+        userManager = new OpenLdapUserManager(props);
         User user = userManager.getUser("gauss", "password");
 
         assertEquals("gauss", user.getUserId());
@@ -151,14 +152,14 @@ public class LdapUserManagerTest {
         thrown.expect(UserManagerException.class);
 
         Props props = getProps();
-        props.put(LdapUserManager.LDAP_USERID_PROPERTY, "invalidField");
-        userManager = new LdapUserManager(props);
+        props.put(OpenLdapUserManager.LDAP_USERID_PROPERTY, "invalidField");
+        userManager = new OpenLdapUserManager(props);
         userManager.getUser("gauss", "password");
     }
 
     @Test
     public void testEscapeLDAPSearchFilter() throws Exception {
-        assertEquals("No special characters to escape", "Hi This is a test #çà", LdapUserManager.escapeLDAPSearchFilter("Hi This is a test #çà"));
-        assertEquals("LDAP Christams Tree", "Hi \\28This\\29 = is \\2A a \\5C test # ç à ô", LdapUserManager.escapeLDAPSearchFilter("Hi (This) = is * a \\ test # ç à ô"));
+        assertEquals("No special characters to escape", "Hi This is a test #çà", OpenLdapUserManager.escapeLDAPSearchFilter("Hi This is a test #çà"));
+        assertEquals("LDAP Christams Tree", "Hi \\28This\\29 = is \\2A a \\5C test # ç à ô", OpenLdapUserManager.escapeLDAPSearchFilter("Hi (This) = is * a \\ test # ç à ô"));
     }
 }
